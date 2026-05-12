@@ -1,33 +1,15 @@
-# FileVault & LTX-Video YouTube Shorts Automation Pipeline
+# LTX-Video YouTube Shorts Automation Pipeline
 
-This repository contains two main projects:
-1. **File Uploader (FileVault):** A simple Streamlit-based file upload dashboard.
-2. **LTX-Video Automation:** Scripts to automate the generation of videos using Lightricks' **LTX-Video** model and upload them directly to YouTube as Shorts.
-
----
-
-## 1. File Uploader (FileVault)
-
-A simple Streamlit-based file upload dashboard that accepts file uploads, stores them in a local `uploads/` folder, preserves metadata, and allows browsing/downloading.
-
-### Setup
-```bash
-pip install -r requirements.txt
-streamlit run app.py
-```
-
----
-
-## 2. LTX-Video YouTube Shorts Automation Pipeline
+This repository contains scripts to automate the generation of videos using Lightricks' **LTX-Video** model and upload them directly to YouTube as Shorts.
 
 Since LTX-Video requires a GPU with at least 16GB VRAM, this guide includes instructions on how to run this pipeline for **free** using cloud platforms.
 
-### Included Scripts
+## Included Scripts
 
 - `generate_video.py`: Uses the Hugging Face `diffusers` library to load the LTX-Video model. It supports both **text-to-video** and **image-to-video** generation, creating an MP4 video optimized for a 16GB VRAM GPU.
 - `youtube_uploader.py`: Uses the Google YouTube Data API v3 to upload the generated MP4 video directly to your YouTube channel.
 
-### How to Get Free GPUs
+## How to Get Free GPUs
 
 If you do not have a local GPU with 16GB+ VRAM, you can use these free cloud platforms:
 
@@ -41,15 +23,15 @@ If you do not have a local GPU with 16GB+ VRAM, you can use these free cloud pla
    - Provides $200 in DigitalOcean credits and $100 in Azure credits.
    - *Note:* While the credits are free, activating GPU virtual machines on these platforms usually requires adding a valid credit card and occasionally submitting a manual support ticket for a GPU quota increase.
 
-### Setup Instructions
+## Setup Instructions
 
-#### 1. Install Dependencies
+### 1. Install Dependencies
 In your Python environment (or Kaggle/Colab notebook), install the dependencies:
 ```bash
 pip install -r requirements.txt
 ```
 
-#### 2. Video Generation
+### 2. Video Generation
 To generate a video, run the script.
 
 **For Text-to-Video:**
@@ -69,7 +51,7 @@ python generate_video.py \
 
 *(Note: Audio generation for LTX-2.3 is natively supported by the base model, but full audio integration within the standard Diffusers pipeline is actively being added by the community. Once updated, Diffusers will allow passing audio conditioning.)*
 
-#### 3. YouTube Upload Automation
+### 3. YouTube Upload Automation
 To upload the video automatically, you need to set up the YouTube API:
 1. Go to the [Google Cloud Console](https://console.cloud.google.com/).
 2. Create a new Project and enable the **YouTube Data API v3**.
