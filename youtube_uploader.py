@@ -3,6 +3,8 @@ import google_auth_oauthlib.flow
 import googleapiclient.discovery
 import googleapiclient.errors
 from googleapiclient.http import MediaFileUpload
+from google.oauth2.credentials import Credentials
+from google.auth.transport.requests import Request
 import argparse
 
 # Define the scopes required for uploading
@@ -11,23 +13,40 @@ SCOPES = ["https://www.googleapis.com/auth/youtube.upload"]
 def authenticate_youtube():
     """
     Authenticates the user and returns the YouTube API service object.
-    Requires a 'client_secrets.json' file downloaded from Google Cloud Console.
+    Supports headless execution (like Kaggle) by reusing 'token.json'.
+    If 'token.json' doesn't exist, it will require local execution first to generate it.
     """
     os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
 
     api_service_name = "youtube"
     api_version = "v3"
     client_secrets_file = "client_secrets.json"
+    token_file = "token.json"
 
-    if not os.path.exists(client_secrets_file):
-        raise FileNotFoundError(f"Missing {client_secrets_file}. Please download it from Google Cloud Console.")
+    credentials = None
 
-    # Get credentials and create an API client
-    flow = google_auth_oauthlib.flow.InstalledAppFlow.from_client_secrets_file(
-        client_secrets_file, SCOPES)
+    # Check if we already have a saved token
+    if os.path.exists(token_file):
+        credentials = Credentials.from_authorized_user_file(token_file, SCOPES)
 
-    # This will open a browser window for authentication
-    credentials = flow.run_local_server(port=0)
+    # If there are no (valid) credentials available, let the user log in.
+    if not credentials or not credentials.valid:
+        if credentials and credentials.expired and credentials.refresh_token:
+            credentials.refresh(Request())
+        else:
+            if not os.path.exists(client_secrets_file):
+                raise FileNotFoundError(f"Missing {client_secrets_file}. Please download it from Google Cloud Console.")
+
+            # Note: This step REQUIRES a local machine with a browser!
+            print("No valid token.json found. Opening browser for authentication...")
+            print("NOTE: If you are running this in Kaggle, this will fail. You must run this locally first to generate token.json, then upload token.json to Kaggle.")
+            flow = google_auth_oauthlib.flow.InstalledAppFlow.from_client_secrets_file(
+                client_secrets_file, SCOPES)
+            credentials = flow.run_local_server(port=0)
+
+        # Save the credentials for the next run
+        with open(token_file, 'w') as token:
+            token.write(credentials.to_json())
 
     youtube = googleapiclient.discovery.build(
         api_service_name, api_version, credentials=credentials)
