@@ -1,1 +1,8 @@
 streamlit>=1.0
+diffusers
+transformers
+accelerate
+imageio[ffmpeg]
+google-api-python-client
+google-auth-oauthlib
+google-auth-httplib2
